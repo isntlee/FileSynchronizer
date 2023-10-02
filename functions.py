@@ -1,5 +1,15 @@
-import os, shutil, logging, hashlib, logging
+import os, shutil, logging, hashlib
 
+
+def logger_func(log_file):
+    logging.basicConfig(
+        level=logging.INFO,
+        handlers=[
+            logging.FileHandler(log_file),
+            logging.StreamHandler()
+        ],
+        format='%(asctime)s - %(message)s'
+    )
 
 def log_info(message):
     logging.info(message)
@@ -21,7 +31,7 @@ def sync_mode(source, dest, mode='pyrobocopy'):
                     print(f"Copied file {s} to {d}")
 
             elif mode == 'md5':
-                if md5_hashing(s) != md5_hashing(d):
+                if md5(s) != md5(d):
                     shutil.copy2(s, d)
                     print(f"Copied file {s} to {d}")
         elif os.path.isdir(s):
@@ -40,33 +50,9 @@ def sync_mode(source, dest, mode='pyrobocopy'):
                 print(f"Removed directory {d}")
 
 
-def md5_hashing(file_name):
+def md5(file_name):
     hash_md5 = hashlib.md5()
     with open(file_name, "rb") as f:
         for chunk in iter(lambda: f.read(4096), b""):
             hash_md5.update(chunk)
     return hash_md5.hexdigest()
-
-
-def logger_func(log_file):
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
-
-    # Create a file handler
-    handler = logging.FileHandler(log_file)
-    handler.setLevel(logging.INFO)
-
-    # Create a console handler
-    console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.INFO)
-
-    # Create a formatter and add it to the handlers
-    formatter = logging.Formatter('%(asctime)s - %(message)s')
-    handler.setFormatter(formatter)
-    console_handler.setFormatter(formatter)
-
-    # Add the handlers to the logger
-    logger.addHandler(handler)
-    logger.addHandler(console_handler)
-
-
