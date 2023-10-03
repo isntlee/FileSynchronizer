@@ -34,6 +34,7 @@ def sync_mode(source, dest, mode='pyrobocopy'):
                 if md5(s) != md5(d):
                     shutil.copy2(s, d)
                     print(f"Copied file {s} to {d}")
+
         elif os.path.isdir(s):
             sync_mode(s, d, mode)
 
