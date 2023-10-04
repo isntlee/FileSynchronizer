@@ -11,8 +11,17 @@ def logger_func(log_file):
         format='%(asctime)s - %(message)s'
     )
 
-def log_info(message):
+def log_print(message):
     logging.info(message)
+    print(message)
+
+
+def md5(file_name):
+    hash_md5 = hashlib.md5()
+    with open(file_name, "rb") as f:
+        for chunk in iter(lambda: f.read(4096), b""):
+            hash_md5.update(chunk)
+    return hash_md5.hexdigest()
 
 
 def sync_mode(source, dest, mode='pyrobocopy'):
@@ -23,17 +32,17 @@ def sync_mode(source, dest, mode='pyrobocopy'):
         if os.path.isfile(s):
             if not os.path.exists(d):
                 shutil.copy2(s, d)
-                print(f"Copied file {s} to {d}")
+                log_print(f"Copied file {s} to {d}")
                 
             elif mode == 'pyrobocopy':
                 if os.path.getmtime(s) > os.path.getmtime(d):
                     shutil.copy2(s, d)
-                    print(f"Copied file {s} to {d}")
+                    log_print(f"Copied file {s} to {d}")
 
             elif mode == 'md5':
                 if md5(s) != md5(d):
                     shutil.copy2(s, d)
-                    print(f"Copied file {s} to {d}")
+                    log_print(f"Copied file {s} to {d}")
 
         elif os.path.isdir(s):
             sync_mode(s, d, mode)
@@ -45,15 +54,7 @@ def sync_mode(source, dest, mode='pyrobocopy'):
         if not os.path.exists(s):
             if os.path.isfile(d):
                 os.remove(d)
-                print(f"Removed file {d}")
+                log_print(f"Removed file {d}")
             elif os.path.isdir(d):
                 shutil.rmtree(d)
-                print(f"Removed directory {d}")
-
-
-def md5(file_name):
-    hash_md5 = hashlib.md5()
-    with open(file_name, "rb") as f:
-        for chunk in iter(lambda: f.read(4096), b""):
-            hash_md5.update(chunk)
-    return hash_md5.hexdigest()
+                log_print(f"Removed directory {d}")
